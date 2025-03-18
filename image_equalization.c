@@ -1,3 +1,9 @@
+/**
+ * @file image_equalization.c
+ * @brief Programa para ecualización de imágenes en escala de grises usando OpenMP
+ * @author Santiago Velasco García
+ * @date 2023
+ */
 
 // Librerías
 #include <stdio.h>
@@ -16,15 +22,90 @@
 #define NUM_BINS 256
 
 // Prototipos de funciones
+
+/**
+ * @brief Función principal que ejecuta la ecualización de la imagen.
+ * @param imgPath Ruta de la imagen a procesar.
+ * @return 0 si la ejecución es correcta, 1 si hay error.
+ */
 int equalizeImage(unsigned char *imgPath);
+
+/**
+ * @brief Genera el histograma de una imagen en escala de grises.
+ * @param image Imagen de entrada en escala de grises.
+ * @param width Ancho de la imagen.
+ * @param height Alto de la imagen.
+ * @param histogram Arreglo donde se almacenará el histograma.
+ */
 void generateGrayscaleHistogram(unsigned char *image, int width, int height, int *histogram);
+
+/**
+ * @brief Genera la función de distribución acumulativa (CDF) a partir de un histograma.
+ * @param histogram Histograma de la imagen original.
+ * @param cdf Arreglo donde se almacenará el CDF.
+ */
 void generateGrayscaleCDF(const int *histogram, int *cdf);
+
+
+/**
+ * @brief Encuentra el primer valor no cero en el CDF.
+ * @param cdf Arreglo del CDF de la imagen.
+ * @return Primer valor no nulo del CDF.
+ */
 int findNonZeroMin(const int *cdf);
+
+/**
+ * @brief Genera el CDF ecualizado.
+ * @param cdf CDF de la imagen original.
+ * @param eqCdf Arreglo donde se almacenará el CDF ecualizado.
+ * @param cdfmin Mínimo valor no nulo del CDF.
+ * @param size Tamaño total de la imagen (width * height).
+ */
 void generateGrayscaleEqCDF(const int *cdf, int *eqCdf, int cdfmin, int size);
+
+/**
+ * @brief Genera la imagen ecualizada en escala de grises.
+ * @param srcImage Imagen original.
+ * @param width Ancho de la imagen.
+ * @param height Alto de la imagen.
+ * @param eqCdf CDF ecualizado.
+ * @param size Tamaño total de la imagen.
+ * @return Imagen ecualizada.
+ */
 unsigned char* generateGrayscaleEqImage(unsigned char *srcImage, int width, int height, int *eqCdf, int size);
+
+/**
+ * @brief Guarda la imagen ecualizada en un archivo.
+ * @param eqImage Imagen ecualizada.
+ * @param width Ancho de la imagen.
+ * @param height Alto de la imagen.
+ * @param original_filename Nombre del archivo original.
+ * @param parallel Indica si es una imagen generada en paralelo o secuencialmente.
+ */
 void createGrayscaleImage(unsigned char *eqImage, int width, int height, const char *original_filename, bool parallel);
+
+/**
+ * @brief Genera un archivo CSV con los histogramas de la imagen original y la ecualizada.
+ * @param histogram_original Histograma de la imagen original.
+ * @param histogram_equalized Histograma de la imagen ecualizada.
+ * @param original_filename Nombre del archivo original.
+ * @param parallel Indica si la ecualización fue en paralelo o secuencial.
+ */
 void generateCSV(int *histogram_original, int *histogram_equalized, const char *original_filename, bool parallel);
 
+/**
+ * @brief Ecualiza una imagen en paralelo utilizando OpenMP.
+ * @param image_data Datos de la imagen en escala de grises.
+ * @param width Ancho de la imagen.
+ * @param height Alto de la imagen.
+ * @param size Tamaño total de la imagen.
+ * @param histogram Histograma de la imagen original.
+ * @param cdf Función de distribución acumulativa de la imagen original.
+ * @param eqCdf CDF ecualizado.
+ * @param eqHistogram Histograma de la imagen ecualizada.
+ * @param cdfmin Mínimo valor no nulo del CDF.
+ * @return Imagen ecualizada en paralelo.
+ */
 unsigned char *equalizeImageParallel(unsigned char *imgPath, int width, int height, int size, int *histogram, int *cdf, int *eqCdf, int *eqHistogram, int cdfmin);
 
 int main(int argc, char *argv[]) {
